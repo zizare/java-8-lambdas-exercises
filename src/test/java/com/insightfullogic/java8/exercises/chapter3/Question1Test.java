@@ -23,7 +23,7 @@ public class Question1Test {
     }
 
     @Test
-    public void addsListWithValues() {
+    public void addslistwithvalues() {
         int result = Question1.addUp(Stream.of(1, 3, -2));
         assertEquals(2, result);
     }
