@@ -14,7 +14,7 @@ public class ArtistsTest {
 
     @Test
     public void indexWithinRange() {
-        Artist artist = optionalExamples.getArtist(0);
+        Artist artist = optionalExamples.getArtist(0).get();
         assertNotNull(artist);
     }
 

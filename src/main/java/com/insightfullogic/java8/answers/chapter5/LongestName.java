@@ -4,6 +4,7 @@ import com.insightfullogic.java8.examples.chapter1.Artist;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
@@ -13,10 +14,11 @@ public class LongestName {
     private static Comparator<Artist> byNameLength = comparing(artist -> artist.getName().length());
 
     public static Artist byReduce(List<Artist> artists) {
+        BinaryOperator<Artist> artistBinaryOperator = (acc, artist) -> {
+            return (byNameLength.compare(acc, artist) >= 0) ? acc : artist;
+        };
         return artists.stream()
-                      .reduce((acc, artist) -> {
-                          return (byNameLength.compare(acc, artist) >= 0) ? acc : artist;
-                      })
+                      .reduce(artistBinaryOperator)
                       .orElseThrow(RuntimeException::new);
     }
 

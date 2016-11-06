@@ -11,6 +11,13 @@ import java.util.stream.Collector;
 
 public class GroupingBy<T, K> implements Collector<T, Map<K, List<T>>, Map<K, List<T>>> {
 
+    private final static Set<Characteristics> characteristics = new HashSet<>();
+
+    static {
+        characteristics.add(Characteristics.IDENTITY_FINISH);
+    }
+
+
     private final Function<? super T, ? extends K> classifier;
 
     public GroupingBy(Function<? super T, ? extends K> classifier) {
@@ -19,27 +26,43 @@ public class GroupingBy<T, K> implements Collector<T, Map<K, List<T>>, Map<K, Li
 
     @Override
     public Supplier<Map<K, List<T>>> supplier() {
-        return Exercises.replaceThisWithSolution();
+        return HashMap::new;
     }
 
     @Override
     public BiConsumer<Map<K, List<T>>, T> accumulator() {
-        return Exercises.replaceThisWithSolution();
+        return (kListMap, t) -> {
+            K key = classifier.apply(t);
+//           More efficient... List<T> elements = kListMap.computeIfAbsent(key, k -> new ArrayList<T>());
+            ArrayList<T> value = new ArrayList<>();
+            kListMap.putIfAbsent(key, value);
+            kListMap.get(key).add(t);
+        };
     }
 
     @Override
     public BinaryOperator<Map<K, List<T>>> combiner() {
-        return Exercises.replaceThisWithSolution();
+        return (kListMap, kListMap2) -> {
+            Map<K, List<T>> result = kListMap;
+            kListMap2.forEach((k, ts) -> {
+                //redo with merge
+                result.putIfAbsent(k, ts);
+                result.computeIfPresent(k, (k1, ts1) -> {
+                    ts1.addAll(ts);
+                    return ts1;
+                });
+            });
+            return result;
+        };
     }
 
     @Override
     public Function<Map<K, List<T>>, Map<K, List<T>>> finisher() {
-        return Exercises.replaceThisWithSolution();
+        return kListMap -> kListMap;
     }
 
     @Override
     public Set<Characteristics> characteristics() {
-        return Exercises.replaceThisWithSolution();
+        return characteristics;
     }
-
 }
